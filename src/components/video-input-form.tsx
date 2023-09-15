@@ -148,7 +148,7 @@ export function VideoInputForm(props: VideoInputFormProps) {
       <Separator />
 
       <div className="space-y-2">
-        <Label htmlFor="transcription_prompt">Prompt de transcrição</Label>
+        <Label htmlFor="transcription_prompt">Palavras-chave de transcrição</Label>
         <Textarea
           ref={promptInputRef}
           disabled={status !== 'waiting'}

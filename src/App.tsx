@@ -8,15 +8,30 @@ import { Slider } from "./components/ui/slider";
 import { VideoInputForm } from "./components/video-input-form";
 import { PromptSelect } from "./components/prompt-select";
 import { useState } from "react";
+import { useCompletion } from 'ai/react';
 
 export function App() {
 
   const [temperature, setTemperature] = useState(0.5);
-  const [videoid, setVideoid] = useState<string | null>(null);
+  const [videoId, setVideoid] = useState<string | null>(null);
 
-  function handlePromptSelected(template: string) {
-    console.log(template);
-  }
+  const {
+    input,
+    setInput,
+    handleInputChange,
+    handleSubmit,
+    completion,
+    isLoading,
+  } = useCompletion({
+    api: 'http://localhost:3333/ai/complete',
+    body: {
+      videoId,
+      temperature,
+    },
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -39,12 +54,15 @@ export function App() {
         <div className="flex flex-col flex-1 gap-4">
           <div className="grid grid-rows-2 gap-4 flex-1">
             <Textarea
-              placeholder="Inclua um prompt para a IA..."
+              placeholder="Inclua um conteúdo para a IA..."
               className="resize-none p-4 leading-relaxed"
+              value={input}
+              onChange={handleInputChange}
             />
             <Textarea
               placeholder="Resultado gerado pela IA..."
               className="resize-none p-4 leading-relaxed"
+              value={completion}
             />
           </div>
           <p className="text-sm text-muted-foreground">
@@ -57,10 +75,10 @@ export function App() {
 
           <Separator />
 
-          <form className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-1">
-              <Label>Prompt</Label>
-                <PromptSelect onPromptSelected={handlePromptSelected} />
+              <Label>Conteúdo</Label>
+                <PromptSelect onPromptSelected={setInput} />
             </div>
 
             <div className="space-y-1">
@@ -86,7 +104,7 @@ export function App() {
 
             <Separator />
 
-            <Button type="submit" className="w-full">Executar<Wand2 className="w-4 h-4 ml-2"/></Button>
+            <Button disabled={isLoading} type="submit" className="w-full">Executar<Wand2 className="w-4 h-4 ml-2"/></Button>
 
           </form>
 
